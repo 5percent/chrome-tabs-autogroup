@@ -27,4 +27,23 @@ export default class ChromeAPI {
       chrome.tabs.remove(tabIds);
     });
   }
+
+  static expandGroup(groupId) {
+    chrome.tabGroups.update(groupId, { collapsed: false });
+  }
+
+  static collapseGroup(groupId) {
+    chrome.tabGroups.update(groupId, { collapsed: true });
+  }
+
+  static getGroupState(groupId) {
+    return new Promise((resolve) => {
+      chrome.tabGroups.get(groupId, (group) => {
+        resolve({
+          id: group.id,
+          isExpanded: !group.collapsed
+        });
+      });
+    });
+  }
 }

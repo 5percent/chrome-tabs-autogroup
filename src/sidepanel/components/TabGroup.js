@@ -5,9 +5,14 @@ import EventBus from './EventBus.js';
 export default class TabGroup {
   constructor(group) {
     this.group = group;
-    this.isExpanded = true;
+    this.isExpanded = true; // 默认展开
     this.element = this.render();
     this.bindEvents();
+
+    // 监听组状态变化事件
+    EventBus.subscribe(`tabGroup:${this.group.id}:stateChanged`, (data) => {
+      this.updateExpandedState(data.isExpanded);
+    });
   }
 
   render() {
@@ -108,6 +113,15 @@ export default class TabGroup {
       tabsContainer.appendChild(tabItem.getElement());
     });
 
+    // 初始化时检查组的实际折叠状态
+    if (this.group.id !== 'ungrouped') {
+      ChromeAPI.getGroupState(this.group.id).then(state => {
+        if (state) {
+          this.updateExpandedState(state.isExpanded);
+        }
+      });
+    }
+
     return tabsContainer;
   }
 
@@ -129,12 +143,16 @@ export default class TabGroup {
           expandIcon.textContent = 'expand_more'; // 向下箭头
           expandIcon.setAttribute('title', '折叠');
         }
+        // 展开 Chrome 标签组
+        ChromeAPI.expandGroup(parseInt(this.group.id));
       } else {
         tabsContainer.style.display = 'none';
         if (expandIcon) {
           expandIcon.textContent = 'expand_less'; // 向上箭头
           expandIcon.setAttribute('title', '展开');
         }
+        // 折叠 Chrome 标签组
+        ChromeAPI.collapseGroup(parseInt(this.group.id));
       }
     });
 
@@ -149,5 +167,27 @@ export default class TabGroup {
 
   getElement() {
     return this.element;
+  }
+
+  // 在 TabGroup 类中添加新方法
+  updateExpandedState(isExpanded) {
+    this.isExpanded = isExpanded;
+
+    const tabsContainer = this.element.querySelector('.tabs-container');
+    const expandIcon = this.element.querySelector('.expand-icon');
+
+    if (this.isExpanded) {
+      tabsContainer.style.display = 'block';
+      if (expandIcon) {
+        expandIcon.textContent = 'expand_more';
+        expandIcon.setAttribute('title', '折叠');
+      }
+    } else {
+      tabsContainer.style.display = 'none';
+      if (expandIcon) {
+        expandIcon.textContent = 'expand_less';
+        expandIcon.setAttribute('title', '展开');
+      }
+    }
   }
 }
