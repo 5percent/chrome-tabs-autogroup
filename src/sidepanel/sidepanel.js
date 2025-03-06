@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function () {
     }
   });
 
+  // 手动执行第一次
+  debouncedUpdate();
+
   // 监听标签组状态变化
   chrome.tabGroups.onUpdated.addListener(
     debounce((group) => {
