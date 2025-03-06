@@ -2,6 +2,7 @@ import ChromeAPI from '../services/ChromeAPI.js';
 import GroupModel from '../services/GroupModel.js';
 import TabGroup from './components/TabGroup.js';
 import EventBus from './components/EventBus.js';
+import { debounce } from '../utils/debounce.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   const tabGroupsContainer = document.getElementById('tab-groups-container');
@@ -28,15 +29,6 @@ document.addEventListener('DOMContentLoaded', function () {
     } catch (error) {
       console.error('Error updating tab groups:', error);
     }
-  }
-
-  // 使用防抖函数减少频繁更新
-  function debounce(func, wait) {
-    let timeout;
-    return function () {
-      clearTimeout(timeout);
-      timeout = setTimeout(() => func(), wait);
-    };
   }
 
   // 防抖处理的更新函数
