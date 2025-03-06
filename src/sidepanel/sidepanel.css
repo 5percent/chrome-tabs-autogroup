@@ -170,3 +170,62 @@ body {
   font-size: 14px;
   /* 减小字体大小 */
 }
+
+/* 添加 Chrome 风格的颜色处理 */
+.chrome-color {
+  opacity: 0.9;
+  /* 降低整体不透明度 */
+}
+
+.chrome-color::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(255, 255, 255, 0.15);
+  /* 添加白色叠加层降低饱和度 */
+  pointer-events: none;
+}
+
+/* 为特定颜色调整不透明度 */
+.group-title[data-original-color="blue"] {
+  background-color: rgba(26, 115, 232, 0.8) !important;
+  /* 蓝色调整 */
+}
+
+.group-title[data-original-color="red"] {
+  background-color: rgba(217, 48, 37, 0.8) !important;
+  /* 红色调整 */
+}
+
+.group-title[data-original-color="yellow"] {
+  background-color: rgba(249, 171, 0, 0.8) !important;
+  /* 黄色调整 */
+}
+
+.group-title[data-original-color="green"] {
+  background-color: rgba(24, 128, 56, 0.8) !important;
+  /* 绿色调整 */
+}
+
+.group-title[data-original-color="pink"] {
+  background-color: rgba(216, 90, 188, 0.8) !important;
+  /* 粉色调整 */
+}
+
+.group-title[data-original-color="purple"] {
+  background-color: rgba(161, 66, 244, 0.8) !important;
+  /* 紫色调整 */
+}
+
+.group-title[data-original-color="cyan"] {
+  background-color: rgba(0, 157, 126, 0.8) !important;
+  /* 青色调整 */
+}
+
+.group-title[data-original-color="orange"] {
+  background-color: rgba(250, 144, 62, 0.8) !important;
+  /* 橙色调整 */
+}

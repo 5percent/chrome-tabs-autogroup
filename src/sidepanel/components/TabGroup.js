@@ -28,8 +28,36 @@ export default class TabGroup {
   renderTitle() {
     const titleElement = document.createElement('div');
     titleElement.className = 'group-title';
-    titleElement.style.backgroundColor = this.group.id === 'ungrouped' ? '#757575' : this.group.color;
+
+    // 调整颜色以匹配 Chrome 的原生标签组颜色
+    const colorMap = {
+      'grey': '#676767',
+      'blue': '#1A73E8',
+      'red': '#D93025',
+      'yellow': '#F9AB00',
+      'green': '#188038',
+      'pink': '#D85ABC',
+      'purple': '#A142F4',
+      'cyan': '#009D7E',
+      'orange': '#FA903E'
+    };
+
+    // 为标签组应用正确的颜色
+    const originalColor = this.group.id === 'ungrouped' ? 'grey' : this.group.color;
+    const adjustedColor = colorMap[originalColor] || originalColor;
+
+    // 设置背景色
+    titleElement.style.backgroundColor = adjustedColor;
+
+    // 添加一个半透明叠加层，降低饱和度
+    titleElement.style.position = 'relative';
+    titleElement.style.overflow = 'hidden';
+
+    // 添加伪元素以获取正确的颜色效果
+    titleElement.classList.add('chrome-color');
+
     titleElement.dataset.groupId = this.group.id;
+    titleElement.dataset.originalColor = originalColor;
 
     // 添加标题文本
     const titleSpan = document.createElement('span');
