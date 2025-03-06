@@ -12,9 +12,20 @@ export default class ChromeAPI {
     });
   }
 
-  static async groupTabs(tabIds) {
+  static async groupTabs(tabIds, groupId) {
+    let params = { tabIds };
+    if (groupId) {
+      params = { ...params, groupId };
+    }
+
     return new Promise((resolve) => {
-      chrome.tabs.group({ tabIds }, (groupId) => resolve(groupId));
+      chrome.tabs.group(params, (groupId) => resolve(groupId));
+    });
+  }
+
+  static async updateGroup(groupId, properties) {
+    return new Promise((resolve) => {
+      chrome.tabGroups.update(groupId, properties, (group) => resolve(group));
     });
   }
 

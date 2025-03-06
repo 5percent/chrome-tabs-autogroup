@@ -22,3 +22,7 @@ export function getRandomColor() {
 
   return randomColor;
 }
+
+export function removeColor(color) {
+  usedColors.delete(color);
+}

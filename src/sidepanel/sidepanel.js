@@ -42,19 +42,11 @@ document.addEventListener('DOMContentLoaded', function () {
   // 防抖处理的更新函数
   const debouncedUpdate = debounce(updateTabGroups, 300);
 
-  // 初始加载
-  updateTabGroups();
-
-  // 监听标签变化和组变化
-  chrome.tabs.onCreated.addListener(debouncedUpdate);
-  chrome.tabs.onRemoved.addListener(debouncedUpdate);
-  chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
-    if (changeInfo.title || changeInfo.url) debouncedUpdate();
+  chrome.runtime.onMessage.addListener((message) => {
+    if (message.action === 'updateTabGroups') {
+      debouncedUpdate();
+    }
   });
-  chrome.tabs.onMoved.addListener(debouncedUpdate);
-  chrome.tabGroups.onCreated.addListener(debouncedUpdate);
-  chrome.tabGroups.onRemoved.addListener(debouncedUpdate);
-  chrome.tabGroups.onMoved.addListener(debouncedUpdate);
 
   // 监听标签组状态变化
   chrome.tabGroups.onUpdated.addListener(
