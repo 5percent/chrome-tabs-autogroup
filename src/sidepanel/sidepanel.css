@@ -1,0 +1,172 @@
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  padding: 0;
+  background-color: #f5f5f5;
+  color: #333;
+  width: 100%;
+  height: 100vh;
+}
+
+#tab-groups-container {
+  padding: 10px;
+}
+
+.tab-group {
+  margin-bottom: 12px;
+  background-color: #fff;
+  border-radius: 8px;
+  overflow: hidden;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+.group-title {
+  padding: 8px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  color: white;
+  font-weight: bold;
+  cursor: pointer;
+  user-select: none;
+}
+
+.group-title-text {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.tab-count {
+  background: rgba(255, 255, 255, 0.3);
+  border-radius: 10px;
+  padding: 0 6px;
+  font-size: 12px;
+  min-width: 16px;
+  text-align: center;
+}
+
+.tabs-container {}
+
+.tab-item {
+  padding: 6px 8px;
+  /* 适当减小内边距 */
+  border-bottom: 1px solid #eee;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+}
+
+.tab-item:hover {
+  background-color: #f0f0f0;
+}
+
+.tab-favicon,
+.tab-favicon-placeholder {
+  width: 16px;
+  height: 16px;
+  margin-right: 8px;
+  flex-shrink: 0;
+}
+
+.tab-favicon-placeholder {
+  background-color: #ddd;
+  border-radius: 2px;
+}
+
+.tab-title {
+  flex-grow: 1;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  font-size: 13px;
+}
+
+/* 修改 .close-tab 样式，使用 iconfont 图标 */
+.close-tab {
+  border: none;
+  background: transparent;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  margin-left: 5px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 18px;
+  /* 减小宽度 */
+  height: 18px;
+  /* 减小高度 */
+  min-width: 18px;
+  /* 确保不会被内容撑大 */
+}
+
+.close-tab:hover {
+  color: #f44336;
+}
+
+.group-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.group-actions button {
+  border: none;
+  background: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 2px 6px;
+  margin-left: 5px;
+  border-radius: 4px;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.group-actions button:hover {
+  background: rgba(255, 255, 255, 0.3);
+}
+
+/* 修改 .expand-icon 样式 */
+.expand-icon {
+  font-size: 18px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+/* 修改 .close-group 样式 */
+.close-group {
+  font-size: 18px;
+  cursor: pointer;
+  width: 20px;
+  height: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  opacity: 0.7;
+}
+
+.close-group:hover {
+  opacity: 1;
+  color: #ff4444;
+}
+
+/* 统一所有 Material Icons 的样式 */
+.material-icons {
+  font-size: 16px;
+  line-height: 1;
+  /* 添加平滑渲染 */
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* 添加以下样式来缩小关闭按钮 */
+.small-icon.material-icons {
+  font-size: 14px;
+  /* 减小字体大小 */
+}
