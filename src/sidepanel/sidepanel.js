@@ -1,6 +1,7 @@
 import ChromeAPI from './services/ChromeAPI.js';
 import DataManager from './services/DataManager.js';
 import TabGroup from './components/TabGroup.js';
+import EventBus from './components/EventBus.js';
 
 document.addEventListener('DOMContentLoaded', function () {
   const tabGroupsContainer = document.getElementById('tab-groups-container');
