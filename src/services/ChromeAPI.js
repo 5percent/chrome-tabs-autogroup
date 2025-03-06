@@ -46,11 +46,11 @@ export default class ChromeAPI {
   }
 
   static expandGroup(groupId) {
-    chrome.tabGroups.update(groupId, { collapsed: false });
+    chrome.tabGroups.update(groupId, { collapsed: false }, () => { });
   }
 
   static collapseGroup(groupId) {
-    chrome.tabGroups.update(groupId, { collapsed: true });
+    chrome.tabGroups.update(groupId, { collapsed: true }, () => { });
   }
 
   static getGroupState(groupId) {
