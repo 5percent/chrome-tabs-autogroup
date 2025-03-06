@@ -5,14 +5,17 @@ import EventBus from './EventBus.js';
 export default class TabGroup {
   constructor(group) {
     this.group = group;
-    this.isExpanded = true; // 默认展开
+    // 未分组标签默认展开，其他标签组默认折叠
+    this.isExpanded = (this.group.id === 'ungrouped');
     this.element = this.render();
     this.bindEvents();
 
     // 监听组状态变化事件
-    EventBus.subscribe(`tabGroup:${this.group.id}:stateChanged`, (data) => {
-      this.updateExpandedState(data.isExpanded);
-    });
+    if (this.group.id !== 'ungrouped') {
+      EventBus.subscribe(`tabGroup:${this.group.id}:stateChanged`, (data) => {
+        this.updateExpandedState(data.isExpanded);
+      });
+    }
   }
 
   render() {
@@ -85,8 +88,9 @@ export default class TabGroup {
       // 添加展开/折叠按钮
       const expandIcon = document.createElement('span');
       expandIcon.className = 'expand-icon material-icons';
-      expandIcon.textContent = 'expand_more'; // Material Icons 的向下箭头
-      expandIcon.setAttribute('title', '折叠');
+      // 设置初始状态为收起图标
+      expandIcon.textContent = 'expand_less';
+      expandIcon.setAttribute('title', '展开');
       actionsElement.appendChild(expandIcon);
 
       // 添加关闭组按钮
@@ -107,20 +111,16 @@ export default class TabGroup {
     tabsContainer.className = 'tabs-container';
     tabsContainer.dataset.groupId = this.group.id;
 
-    // 创建并添加所有标签项
+    // 设置初始状态为收起
+    if (!this.isExpanded) {
+      tabsContainer.style.display = 'none';
+    }
+
+    // 添加标签项
     this.group.tabs.forEach(tab => {
       const tabItem = new TabItem(tab);
       tabsContainer.appendChild(tabItem.getElement());
     });
-
-    // 初始化时检查组的实际折叠状态
-    if (this.group.id !== 'ungrouped') {
-      ChromeAPI.getGroupState(this.group.id).then(state => {
-        if (state) {
-          this.updateExpandedState(state.isExpanded);
-        }
-      });
-    }
 
     return tabsContainer;
   }
@@ -131,9 +131,21 @@ export default class TabGroup {
     const expandIcon = titleElement.querySelector('.expand-icon');
     const closeButton = titleElement.querySelector('.close-group');
 
+    // 在 bindEvents 方法中
+    let isUpdatingFromEvent = false;
+
+    // 监听组状态变化事件
+    if (this.group.id !== 'ungrouped') {
+      EventBus.subscribe(`tabGroup:${this.group.id}:stateChanged`, (data) => {
+        isUpdatingFromEvent = true;
+        this.updateExpandedState(data.isExpanded);
+        setTimeout(() => { isUpdatingFromEvent = false; }, 100);
+      });
+    }
+
     // 展开/折叠逻辑
     titleElement.addEventListener('click', (e) => {
-      if (e.target.classList.contains('close-group')) return;
+      if (e.target.classList.contains('close-group') || isUpdatingFromEvent) return;
 
       this.isExpanded = !this.isExpanded;
 

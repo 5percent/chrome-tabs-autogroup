@@ -139,6 +139,9 @@ async function scanAndGroupTabs() {
 					color: color
 				});
 
+				// 创建后自动折叠
+				await autoCollapseGroup(groupId);
+
 				// 记录简化域名和标签组的映射关系
 				domainGroupMap[simplified] = {
 					id: groupId,
@@ -149,6 +152,24 @@ async function scanAndGroupTabs() {
 				console.error('创建标签组失败:', e);
 			}
 		}
+	}
+}
+
+// 自动折叠新创建的标签组
+chrome.tabGroups.onCreated.addListener((group) => {
+	// 短暂延迟以确保组已完全创建
+	setTimeout(() => {
+		chrome.tabGroups.update(group.id, { collapsed: true })
+			.catch(error => console.error('自动折叠标签组失败:', error));
+	}, 300);
+});
+
+// 在创建标签组后自动将其折叠
+async function autoCollapseGroup(groupId) {
+	try {
+		await chrome.tabGroups.update(groupId, { collapsed: true });
+	} catch (error) {
+		console.error('折叠标签组失败:', error);
 	}
 }
 
@@ -180,15 +201,31 @@ async function processTab(tabId, url) {
 	// 检查该简化域名是否已存在标签组
 	if (domainGroupMap[simplified]) {
 		try {
+			// 先检查组是否仍然存在
+			const groupExists = await checkIfGroupExists(domainGroupMap[simplified].id);
+
+			if (!groupExists) {
+				// 如果组不存在，从映射中删除并重新扫描
+				console.log(`标签组 ${domainGroupMap[simplified].id} 不存在，清理映射并重新扫描`);
+				usedColors.delete(domainGroupMap[simplified].color);
+				delete domainGroupMap[simplified];
+				// 重新创建该域名的组
+				return await scanAndCreateGroupForSimplifiedDomain(simplified);
+			}
+
 			// 将完整域名添加到集合中
 			domainGroupMap[simplified].domains.add(domain.full);
 
+			// 尝试将标签添加到组
 			await chrome.tabs.group({
 				tabIds: [tabId],
 				groupId: domainGroupMap[simplified].id
 			});
 		} catch (e) {
-			// 如果标签组不存在了，重新扫描
+			// 记录详细错误信息
+			console.error(`将标签添加到组失败 (ID: ${tabId}, URL: ${url}, Group: ${domainGroupMap[simplified]?.id}):`, e);
+
+			// 检查是否是组不存在了，重新扫描
 			if (e.message && e.message.includes("group does not exist")) {
 				delete domainGroupMap[simplified];
 				scanAndGroupTabs();
@@ -210,6 +247,9 @@ async function processTab(tabId, url) {
 					title: simplified,
 					color: color
 				});
+
+				// 创建后自动折叠
+				await autoCollapseGroup(groupId);
 
 				// 记录所有相关的完整域名
 				const fullDomains = new Set();
@@ -265,12 +305,30 @@ chrome.tabs.onRemoved.addListener(async () => {
 	}
 });
 
+// 折叠所有标签组
+async function collapseAllGroups() {
+	try {
+		const groups = await chrome.tabGroups.query({});
+		for (const group of groups) {
+			if (!group.collapsed) {
+				await chrome.tabGroups.update(group.id, { collapsed: true });
+			}
+		}
+	} catch (error) {
+		console.error('折叠所有标签组失败:', error);
+	}
+}
+
+// 在扩展启动或安装时折叠所有组
+chrome.runtime.onStartup.addListener(collapseAllGroups);
+chrome.runtime.onInstalled.addListener(collapseAllGroups);
+
 // 初始扫描
 chrome.runtime.onInstalled.addListener(() => {
 	scanAndGroupTabs();
 });
 
-// 初始化时也扫描一次
-scanAndGroupTabs();
+// 初始化时也扫描一次并折叠所有组
+scanAndGroupTabs().then(() => collapseAllGroups());
 
 

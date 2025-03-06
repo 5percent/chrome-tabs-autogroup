@@ -24,6 +24,7 @@ document.addEventListener('DOMContentLoaded', function () {
         const tabGroup = new TabGroup(group);
         tabGroupsContainer.appendChild(tabGroup.getElement());
       });
+
     } catch (error) {
       console.error('Error updating tab groups:', error);
     }
