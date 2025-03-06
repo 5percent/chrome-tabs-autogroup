@@ -1,4 +1,4 @@
-import ChromeAPI from '../services/ChromeAPI.js';
+import ChromeAPI from '../../services/ChromeAPI.js';
 
 export default class TabItem {
   constructor(tab) {

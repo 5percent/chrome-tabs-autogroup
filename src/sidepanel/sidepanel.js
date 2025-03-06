@@ -1,5 +1,5 @@
-import ChromeAPI from './services/ChromeAPI.js';
-import DataManager from './services/DataManager.js';
+import ChromeAPI from '../services/ChromeAPI.js';
+import GroupModel from '../services/GroupModel.js';
 import TabGroup from './components/TabGroup.js';
 import EventBus from './components/EventBus.js';
 
@@ -17,7 +17,7 @@ document.addEventListener('DOMContentLoaded', function () {
       const tabs = await ChromeAPI.getAllTabs();
 
       // 处理数据
-      const organizedGroups = DataManager.organizeTabsIntoGroups(groups, tabs);
+      const organizedGroups = GroupModel.organizeTabsIntoGroups(groups, tabs);
 
       // 渲染UI
       organizedGroups.forEach(group => {
@@ -54,20 +54,21 @@ document.addEventListener('DOMContentLoaded', function () {
   chrome.tabs.onMoved.addListener(debouncedUpdate);
   chrome.tabGroups.onCreated.addListener(debouncedUpdate);
   chrome.tabGroups.onRemoved.addListener(debouncedUpdate);
-  chrome.tabGroups.onUpdated.addListener(debouncedUpdate);
   chrome.tabGroups.onMoved.addListener(debouncedUpdate);
 
   // 监听标签组状态变化
-  chrome.tabGroups.onUpdated.addListener((group) => {
-    // 如果是折叠状态变化
-    if (group.collapsed !== undefined) {
-      // 通过事件总线通知对应的组件
-      EventBus.publish(`tabGroup:${group.id}:stateChanged`, {
-        isExpanded: !group.collapsed
-      });
-    } else {
-      // 其他变化仍然触发界面更新
-      debouncedUpdate();
-    }
-  });
+  chrome.tabGroups.onUpdated.addListener(
+    debounce((group) => {
+      // 如果是折叠状态变化
+      if (group.collapsed !== undefined) {
+        // 通过事件总线通知对应的组件
+        EventBus.publish(`tabGroup:${group.id}:stateChanged`, {
+          isExpanded: !group.collapsed
+        });
+      } else {
+        // 其他变化仍然触发界面更新
+        debouncedUpdate();
+      }
+    }, 300)
+  );
 });

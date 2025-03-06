@@ -1,5 +1,6 @@
 // 数据处理逻辑
-export default class DataManager {
+export default class GroupModel {
+
   static organizeTabsIntoGroups(groups, tabs) {
     const groupMap = {};
 

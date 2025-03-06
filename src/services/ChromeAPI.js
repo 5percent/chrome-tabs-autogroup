@@ -12,6 +12,12 @@ export default class ChromeAPI {
     });
   }
 
+  static async groupTabs(tabIds) {
+    return new Promise((resolve) => {
+      chrome.tabs.group({ tabIds }, (groupId) => resolve(groupId));
+    });
+  }
+
   static activateTab(tabId, windowId) {
     chrome.tabs.update(tabId, { active: true });
     chrome.windows.update(windowId, { focused: true });

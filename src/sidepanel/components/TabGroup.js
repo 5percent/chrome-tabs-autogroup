@@ -1,5 +1,5 @@
 import TabItem from './TabItem.js';
-import ChromeAPI from '../services/ChromeAPI.js';
+import ChromeAPI from '../../services/ChromeAPI.js';
 import EventBus from './EventBus.js';
 
 export default class TabGroup {
