@@ -2,33 +2,48 @@
 export default class GroupModel {
 
   static organizeTabsIntoGroups(groups, tabs) {
+    // 创建映射以快速查找组信息
     const groupMap = {};
-
-    // 初始化组信息
     groups.forEach(group => {
       groupMap[group.id] = {
-        ...group,
+        id: group.id,
+        title: group.title,
+        color: group.color,
+        collapsed: group.collapsed, // 确保传递折叠状态
         tabs: []
       };
     });
 
-    // 添加未分组的标签容器
-    groupMap['ungrouped'] = {
-      id: 'ungrouped',
-      title: '未分组标签',
-      color: 'grey',
-      tabs: []
-    };
+    // 添加未分组标签的特殊组
+    const ungroupedTabs = [];
 
-    // 将标签页归类到对应的组
+    // 为每个标签找到其所属组
     tabs.forEach(tab => {
-      if (tab.groupId > 0 && groupMap[tab.groupId]) {
+      if (tab.groupId && groupMap[tab.groupId]) {
         groupMap[tab.groupId].tabs.push(tab);
       } else {
-        groupMap['ungrouped'].tabs.push(tab);
+        ungroupedTabs.push(tab);
       }
     });
 
-    return Object.values(groupMap).filter(group => group.tabs.length > 0);
+    // 转换为数组并添加未分组标签
+    const result = Object.values(groupMap);
+
+    if (ungroupedTabs.length > 0) {
+      result.push({
+        id: 'ungrouped',
+        title: '未分组标签',
+        color: 'grey',
+        collapsed: false, // 未分组标签默认展开
+        tabs: ungroupedTabs
+      });
+    }
+
+    // 按组ID排序，确保未分组标签在最后
+    return result.sort((a, b) => {
+      if (a.id === 'ungrouped') return 1;
+      if (b.id === 'ungrouped') return -1;
+      return a.id - b.id;
+    });
   }
 }

@@ -5,8 +5,16 @@ import EventBus from './EventBus.js';
 export default class TabGroup {
   constructor(group) {
     this.group = group;
-    // 未分组标签默认展开，其他标签组默认折叠
-    this.isExpanded = (this.group.id === 'ungrouped');
+
+    // 检查是否未分组或有明确的折叠状态信息
+    if (this.group.id === 'ungrouped') {
+      // 未分组标签默认展开
+      this.isExpanded = true;
+    } else {
+      // 使用标签组本身的折叠状态(如果存在)
+      this.isExpanded = this.group.collapsed === false;
+    }
+
     this.element = this.render();
     this.bindEvents();
 
@@ -88,9 +96,14 @@ export default class TabGroup {
       // 添加展开/折叠按钮
       const expandIcon = document.createElement('span');
       expandIcon.className = 'expand-icon material-icons';
-      // 设置初始状态为收起图标
-      expandIcon.textContent = 'expand_less';
-      expandIcon.setAttribute('title', '展开');
+      // 根据初始折叠状态设置图标
+      if (this.isExpanded) {
+        expandIcon.textContent = 'expand_more';
+        expandIcon.setAttribute('title', '折叠');
+      } else {
+        expandIcon.textContent = 'expand_less';
+        expandIcon.setAttribute('title', '展开');
+      }
       actionsElement.appendChild(expandIcon);
 
       // 添加关闭组按钮
@@ -111,9 +124,11 @@ export default class TabGroup {
     tabsContainer.className = 'tabs-container';
     tabsContainer.dataset.groupId = this.group.id;
 
-    // 设置初始状态为收起
+    // 根据初始化时的折叠状态设置显示
     if (!this.isExpanded) {
       tabsContainer.style.display = 'none';
+    } else {
+      tabsContainer.style.display = 'block';
     }
 
     // 添加标签项

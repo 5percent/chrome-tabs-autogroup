@@ -1,8 +1,20 @@
 // Chrome API封装，提供统一的接口
 export default class ChromeAPI {
   static async getTabGroups() {
-    return new Promise((resolve) => {
-      chrome.tabGroups.query({}, (groups) => resolve(groups));
+    return new Promise((resolve, reject) => {
+      chrome.tabGroups.query({}, (groups) => {
+        if (chrome.runtime.lastError) {
+          reject(chrome.runtime.lastError);
+        } else {
+          // 确保每个组对象都包含折叠状态信息
+          resolve(groups.map(group => ({
+            id: group.id,
+            title: group.title,
+            color: group.color,
+            collapsed: group.collapsed
+          })));
+        }
+      });
     });
   }
 
