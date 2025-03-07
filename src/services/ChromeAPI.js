@@ -45,12 +45,40 @@ export default class ChromeAPI {
     });
   }
 
-  static expandGroup(groupId) {
-    chrome.tabGroups.update(groupId, { collapsed: false }, () => { });
+  static async expandGroup(groupId) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.tabGroups.update(groupId, { collapsed: false }, (group) => {
+          if (chrome.runtime.lastError) {
+            console.error('展开标签组失败:', chrome.runtime.lastError);
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(group);
+          }
+        });
+      } catch (error) {
+        console.error('展开标签组异常:', error);
+        reject(error);
+      }
+    });
   }
 
-  static collapseGroup(groupId) {
-    chrome.tabGroups.update(groupId, { collapsed: true }, () => { });
+  static async collapseGroup(groupId) {
+    return new Promise((resolve, reject) => {
+      try {
+        chrome.tabGroups.update(groupId, { collapsed: true }, (group) => {
+          if (chrome.runtime.lastError) {
+            console.error('折叠标签组失败:', chrome.runtime.lastError);
+            reject(chrome.runtime.lastError);
+          } else {
+            resolve(group);
+          }
+        });
+      } catch (error) {
+        console.error('折叠标签组异常:', error);
+        reject(error);
+      }
+    });
   }
 
   static getGroupState(groupId) {
